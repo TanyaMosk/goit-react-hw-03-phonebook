@@ -4,6 +4,8 @@ import ContactList from './ContactList';
 import ContactForm from './ContactForm';
 import Filter from "./Filter";
 
+const STORAGE_KEY = 'phonebook-storage';
+
 export class App extends Component{
  state = {
   contacts: [
@@ -14,10 +16,11 @@ export class App extends Component{
   ],
     filter: '',    
   }
-  
+
+   
   addContacts = newContact => {
-    console.log(newContact)
-    const checkContact = this.state.contacts.find(contact => contact.name === newContact.name);
+    
+  const checkContact = this.state.contacts.find(contact => contact.name === newContact.name);
 
   if (checkContact) {    
     return alert(`${newContact.name} is already in contacts.`);;
@@ -45,7 +48,25 @@ export class App extends Component{
     })
   };
   
+  componentDidMount() {    
+
+    const storage = localStorage.getItem(STORAGE_KEY)
+    const storageContacts = JSON.parse(storage);
+
+    if (storageContacts !== null) {
+      this.setState({ contacts: storageContacts });
+    }
+  };
+  
+  componentDidUpdate(prevProps, prevState) {   
+    
+    if(this.state.contacts !== prevState.contacts)   
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state.contacts));    
+  };
+
   render() {    
+
+
     const { filter, contacts } = this.state;     
 
     const visibleContacts = contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
